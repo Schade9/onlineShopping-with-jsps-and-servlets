@@ -1,0 +1,73 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="sql" uri="http://java.sun.com/jsp/jstl/sql" %>
+<%@ page import="users.model.User" %>
+
+
+<%
+User user = (User)request.getSession().getAttribute("user");
+if(user == null) {
+	System.out.println("unknown user");
+	response.sendRedirect("login.jsp");
+} else if(user.getUsername().equals("admin")){
+	
+} else if(user.getUsername() != "admin") {
+	response.sendRedirect("index.jsp");
+}
+%>
+
+
+<%@include file="header.jsp" %>
+<div class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-10 mx-auto my-2 text-center text-title">
+                <h1 class="text-capitalize font-weight-bold">MY
+                    <strong class="text-blue">PRODUCTS</strong>
+                </h1>
+            </div>
+        </div>
+        
+        <a href="addProduct.jsp"><button class="btn btn-primary">Add Product</button></a>
+        <sql:setDataSource var="db" driver="com.mysql.jdbc.Driver" url="jdbc:mysql://localhost:3306/ebay" user="root" password=""/>
+        <sql:query var="rs" dataSource="${db}">
+        	select * from products
+        </sql:query>
+        
+          
+        <div class="row">
+        
+            <!-- product wrapper -->
+            <c:forEach items="${rs.rows}" var="prod">
+	            <div class="col-9 mx-auto col-md-6 col-lg-3 my-3">
+	                <div class="card">
+	                    <div class="img-container p-5">
+	                        <a href="ProductDetails?productId=${prod.id}">
+	                            <img class="card-img-top" src="images/${prod.fileName}" alt="image">
+	                        </a>
+	                        <!--<button class="cart-btn" disabled="true">
+	                            <p class="text-capitalize mb-0">Added</p>
+	                        </button>-->
+	                    </div>
+	                    <!-- Card footer -->
+	                    <div class="card-footer d-flex justify-content-between">
+	                        <p class="align-self-center mb-0 font-weight-bold">
+	                            ${prod.name}
+	                        </p>
+	                        <h4 class="text-blue font-italic mb-0">
+	                            <span class="mr-1">$</span>
+	                            ${prod.price}
+	                        </h4>
+	                    </div>
+	                </div><br>
+	                <a href="DeleteProducts?productId=${prod.id}">
+	                	<button class="btn btn btn-danger mr-1">Delete</button>
+	                </a>
+	            </div>
+            </c:forEach>
+            <!-- product wrapper -->
+
+        </div>
+    </div>
+</div>
+
+<%@include file="footer.jsp" %>
